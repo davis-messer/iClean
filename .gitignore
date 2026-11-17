@@ -1,0 +1,30 @@
+# macOS metadata
+.DS_Store
+.AppleDouble
+._*
+
+# Build output
+/build/
+DerivedData/
+.build/
+
+# Xcode user-specific settings and UI state
+xcuserdata/
+*.xcuserstate
+
+# Exported app artifacts
+*.ipa
+*.dSYM
+*.dSYM.zip
+*.xcarchive
+
+# Local environment secrets
+.env
+.env.*
+!.env.example
+
+# Signing credentials
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile

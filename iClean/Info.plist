@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>iClean needs access to your photos to help you sort and organize them.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>iClean needs permission to manage your photo library.</string>
+</dict>
+</plist>
