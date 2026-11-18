@@ -1,13 +1,9 @@
-//
 //  SortingViewModel.swift
 //  iClean
-//
-//  Created by Davis Messer on 11/11/26.
 //
 //  State machine for the Sort screen: library authorization and loading,
 //  the cursor-based sliding window of loaded cards, swipe gesture handling,
 //  and the deferred batch-deletion queue.
-//
 
 import SwiftUI
 import Photos
@@ -210,6 +206,7 @@ class SortingViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if success {
                     self.pendingDeletions.removeAll()
+                    self.loadPhotos() // Update photo library after deletions
                 } else {
                     self.errorMessage = "Failed to delete photos: \(error?.localizedDescription ?? "Unknown error")"
                     self.showError = true
