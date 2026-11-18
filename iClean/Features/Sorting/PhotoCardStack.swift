@@ -8,25 +8,83 @@
 //
 
 import SwiftUI
+import Photos
 
 /// Fits a photo inside a rounded card with an ink border and hard offset shadow.
 struct PhotoCardView: View {
     let photo: PhotoItem
-
+    @State private var storageSize: String?
+    
     var body: some View {
-        Image(uiImage: photo.image)
-            .resizable()
-            .scaledToFit()
-            .clipShape(RoundedRectangle(cornerRadius: 15))
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(AppTheme.ink)
-                    .offset(x: 4, y: 5)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(AppTheme.ink, lineWidth: 2.5)
-            )
+        VStack(alignment: .leading, spacing: 12) {
+            Image(uiImage: photo.image)
+                .resizable()
+                .scaledToFit()
+                .overlay(
+                    Rectangle()
+                        .strokeBorder(AppTheme.ink, lineWidth: 2)
+                )
+                .frame(maxWidth: .infinity, alignment: .center)
+                
+
+            if let asset = photo.asset {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let date = asset.creationDate {
+                        Text("Date: \(date.formatted(date: .abbreviated, time: .shortened))")
+                    } else {
+                        Text("Date: Unknown")
+                    }
+
+                    Text("Dimensions: \(asset.pixelWidth) x \(asset.pixelHeight) pixels")
+                    
+                    Text("Size: \(storageSize ?? "Unknown")")
+
+                    Text("Favorite Status: \(asset.isFavorite ? "Favorite" : "Not a favorite")")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .task(id: photo.id) {
+            guard let asset = photo.asset else { return }
+
+            let byteCount: Int? = await withCheckedContinuation { continuation in
+                let options = PHImageRequestOptions()
+                options.version = .original
+                options.deliveryMode = .highQualityFormat
+                options.isNetworkAccessAllowed = false
+
+                PHImageManager.default().requestImageDataAndOrientation(
+                    for: asset,
+                    options: options
+                ) { data, _, _, _ in
+                    continuation.resume(returning: data?.count)
+                }
+            }
+
+            if let byteCount {
+                storageSize = ByteCountFormatter.string(
+                    fromByteCount: Int64(byteCount),
+                    countStyle: .file
+                )
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .fill(.background)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .fill(AppTheme.ink)
+                .offset(x: 4, y: 5)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(AppTheme.ink, lineWidth: 2.5)
+        )
     }
 }
 
