@@ -19,6 +19,7 @@ struct ContentView: View {
     }
 
     @State private var selectedPage: Page = .sort
+    @State private var hasContinued = false
 
     var body: some View {
         ZStack {
@@ -26,14 +27,20 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                pagePicker
-                    .padding()
+                if hasContinued {
+                    pagePicker
+                        .padding()
 
-                switch selectedPage {
-                case .sort:
-                    SortingView()
-                case .duplicates:
-                    DuplicatePhotosView()
+                    switch selectedPage {
+                    case .sort:
+                        SortingView()
+                    case .duplicates:
+                        DuplicatePhotosView()
+                    }
+                } else {
+                    WelcomeView {
+                        hasContinued = true
+                    }
                 }
             }
         }
