@@ -9,11 +9,13 @@
 
 import SwiftUI
 import Photos
+import MapKit
 
 /// Fits a photo inside a rounded card with an ink border and hard offset shadow.
 struct PhotoCardView: View {
     let photo: PhotoItem
     @State private var storageSize: String?
+    @State private var locationName = "Unknown"
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -35,12 +37,12 @@ struct PhotoCardView: View {
                         Text("Date: Unknown")
                     }
 
+                    Text("Location: \(locationName)")
+                    Text("Favorite: \(asset.isFavorite ? "Yes" : "No")")
                     Text("Dimensions: \(asset.pixelWidth) x \(asset.pixelHeight) pixels")
-                    
                     Text("Size: \(storageSize ?? "Unknown")")
-
-                    Text("Favorite Status: \(asset.isFavorite ? "Favorite" : "Not a favorite")")
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -68,6 +70,32 @@ struct PhotoCardView: View {
                     fromByteCount: Int64(byteCount),
                     countStyle: .file
                 )
+            }
+        }
+        .task(id: photo.id) {
+            guard let location = photo.asset?.location else {
+                locationName = "Unknown"
+                return
+            }
+
+            guard let request = MKReverseGeocodingRequest(location: location) else {
+                locationName = "Invalid location"
+                return
+            }
+
+            locationName = "Loading…"
+
+            do {
+                let items = try await request.mapItems
+
+                guard !Task.isCancelled else { return }
+
+                locationName = items.first?
+                    .addressRepresentations?
+                    .cityWithContext(.full) ?? "Unknown"
+            } catch {
+                guard !Task.isCancelled else { return }
+                locationName = "Unavailable"
             }
         }
         .padding(16)
