@@ -12,8 +12,7 @@ import Photos
 
 // Coordinates library loading, starting-photo selection, the sorting stack, and its action menu.
 struct SortingView: View {
-    @StateObject private var viewModel = SortingViewModel()
-    @State private var showMenu = false
+    @ObservedObject var viewModel: SortingViewModel
 
     var body: some View {
         ZStack {
@@ -65,15 +64,6 @@ struct SortingView: View {
                             .font(.subheadline)
                             .foregroundColor(AppTheme.ink.opacity(0.6))
 
-                        Button(action: { viewModel.chooseNewStart() }) {
-                            Label("Choose New Start", systemImage: "square.grid.2x2")
-                                .font(.headline)
-                                .foregroundColor(AppTheme.ink)
-                                .padding()
-                                .retroPanel(fill: AppTheme.teal, cornerRadius: 12)
-                        }
-                        .buttonStyle(.plain)
-
                         if !viewModel.pendingDeletions.isEmpty {
                             Button(action: { viewModel.commitDeletions() }) {
                                 Label(
@@ -114,7 +104,7 @@ struct SortingView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     }
 
-                    // Manual delete/keep actions flank the menu launcher.
+                    // Manual delete, commit-pending-deletions, and keep actions.
                     HStack(spacing: 50) {
                         VStack(spacing: 10) {
                             Button(action: { viewModel.swipePhotoLeft() }) {
@@ -131,16 +121,17 @@ struct SortingView: View {
                         }
 
                         VStack(spacing: 10) {
-                            Button(action: { toggleMenu() }) {
-                                Image(systemName: "line.3.horizontal")
+                            Button(action: { viewModel.commitDeletions() }) {
+                                Image(systemName: "trash.fill")
                                     .font(.system(size: 20, weight: .heavy))
-                                    .foregroundColor(AppTheme.ink)
+                                    .foregroundColor(.white)
                                     .frame(width: 52, height: 52)
                             }
                             .buttonStyle(.plain)
-                            .retroCircle(fill: AppTheme.cream)
-                            .opacity(showMenu ? 0 : 1)
-                            Text("Menu")
+                            .retroCircle(fill: AppTheme.coral)
+                            .opacity(viewModel.pendingDeletions.isEmpty ? 0.5 : 1)
+                            .disabled(viewModel.pendingDeletions.isEmpty)
+                            Text("Delete \(viewModel.pendingDeletions.count)")
                                 .font(.caption.bold())
                                 .foregroundColor(AppTheme.ink)
                         }
@@ -170,42 +161,6 @@ struct SortingView: View {
             } message: {
                 Text(viewModel.errorMessage)
             }
-
-            // Overlay the action panel; its rounded tab replaces the hidden menu launcher.
-            if showMenu {
-                // Dim the sorting screen and dismiss the menu when its backdrop is tapped.
-                Color.black.opacity(0.08)
-                    .ignoresSafeArea()
-                    .onTapGesture { toggleMenu() }
-                    .transition(.opacity)
-
-                SortMenuPopupView(
-                    pendingDeletionCount: viewModel.pendingDeletions.count,
-                    isExpanded: showMenu,
-                    onClose: toggleMenu,
-                    onDelete: {
-                        toggleMenu()
-                        viewModel.commitDeletions()
-                    },
-                    onChooseStart: {
-                        toggleMenu()
-                        viewModel.chooseNewStart()
-                    }
-                )
-                .padding(.horizontal, 45)
-                .frame(maxHeight: .infinity, alignment: .bottom)
-                // The dome hangs off the panel's bottom edge into the space
-                // the menu button occupied.
-                .padding(.bottom, 30)
-                .transition(.scale(scale: 0.05, anchor: .bottom).combined(with: .opacity))
-            }
-        }
-    }
-
-    /// Opens or closes the action menu using the same spring animation in either direction.
-    private func toggleMenu() {
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-            showMenu.toggle()
         }
     }
 }

@@ -38,9 +38,9 @@ struct PhotoCardView: View {
                     }
 
                     Text("Location: \(locationName)")
-                    Text("Favorite: \(asset.isFavorite ? "Yes" : "No")")
                     Text("Dimensions: \(asset.pixelWidth) x \(asset.pixelHeight) pixels")
                     Text("Size: \(storageSize ?? "Unknown")")
+                    Text("Favorite: \(asset.isFavorite ? "Yes" : "No")")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.caption)

@@ -8,18 +8,20 @@
 
 import SwiftUI
 
+/// The two top-level pages of the app.
+enum Page: String, CaseIterable, Identifiable {
+    case sort = "Sort"
+    case duplicates = "Duplicates"
+
+    var id: Self { self }
+}
+
 /// Hosts the Sort and Duplicates pages over a shared graph-paper background.
 struct ContentView: View {
-    /// The two top-level pages of the app.
-    private enum Page: String, CaseIterable, Identifiable {
-        case sort = "Sort"
-        case duplicates = "Duplicates"
-
-        var id: Self { self }
-    }
-
-    @State private var selectedPage: Page = .sort
+    @State private var selectedPage: Page?
     @State private var hasContinued = false
+    @State private var showLeaveSortConfirmation = false
+    @StateObject private var sortingViewModel = SortingViewModel()
 
     var body: some View {
         ZStack {
@@ -27,24 +29,55 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                if hasContinued {
-                    pagePicker
-                        .padding()
+                if !hasContinued {
+                    WelcomeView {
+                        hasContinued = true
+                    }
+                } else if let page = selectedPage {
+                    HStack {
+                        Button {
+                            if page == .sort && !sortingViewModel.pendingDeletions.isEmpty {
+                                showLeaveSortConfirmation = true
+                            } else {
+                                selectedPage = nil
+                            }
+                        } label: {
+                            Label("Menu", systemImage: "chevron.left")
+                                .font(.subheadline.bold())
+                                .foregroundColor(AppTheme.ink)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .retroPanel(fill: AppTheme.pickerPink, cornerRadius: 10)
+                        }
+                        .buttonStyle(.plain)
 
-                    switch selectedPage {
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+
+                    switch page {
                     case .sort:
-                        SortingView()
+                        SortingView(viewModel: sortingViewModel)
                     case .duplicates:
                         DuplicatePhotosView()
                     }
                 } else {
-                    WelcomeView {
-                        hasContinued = true
+                    MenuView { page in
+                        selectedPage = page
                     }
                 }
             }
         }
         .fontDesign(.rounded)
+        .alert("Leave Sorting?", isPresented: $showLeaveSortConfirmation) {
+            Button("Leave", role: .destructive) {
+                selectedPage = nil
+            }
+            Button("Stay", role: .cancel) { }
+        } message: {
+            Text("You have \(sortingViewModel.pendingDeletions.count) photo\(sortingViewModel.pendingDeletions.count == 1 ? "" : "s") queued for deletion that won't be deleted.")
+        }
     }
 
     /// A chunky segmented control with the retro outline-and-hard-shadow look.
