@@ -164,3 +164,9 @@ struct SortingView: View {
         }
     }
 }
+
+struct SortingView_Previews: PreviewProvider {
+    static var previews: some View {
+        SortingView(viewModel: SortingViewModel())
+    }
+}

@@ -18,7 +18,6 @@ struct PhotoItem: Identifiable {
     let asset: PHAsset?
     var offset: CGSize = .zero
     var degrees: Double = 0
-    var zIndex: Double = 0
 
     /// Creates a centered, unrotated card, optionally linked to an asset for later deletion.
     init(image: UIImage, asset: PHAsset? = nil) {

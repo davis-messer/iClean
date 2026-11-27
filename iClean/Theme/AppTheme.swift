@@ -18,6 +18,19 @@ enum AppTheme {
     static let ink = Color(red: 0.13, green: 0.12, blue: 0.14)
     static let teal = Color(red: 0.36, green: 0.84, blue: 0.78)
     static let coral = Color(red: 1.0, green: 0.47, blue: 0.44)
+
+    // Purple and Lime Color Scheme
+    static let indigoPurple = Color(red: 75 / 255, green: 0 / 255, blue: 95 / 255)
+    static let plumPurple = Color(red: 140 / 255, green: 0 / 255, blue: 180 / 255)
+    static let lavenderPurple = Color(red: 246 / 255, green: 215 / 255, blue: 255 / 255)
+    
+    static let limeGreen = Color(red: 219 / 255, green: 255 / 255, blue: 170 / 255)
+    static let oliveGreen = Color(red: 95 / 255.0, green: 115 / 255.0, blue: 0 / 255.0)
+    static let forestGreen = Color(red: 55 / 255.0, green: 65 / 255.0,blue: 38 / 255.0)
+    
+    static let yellowOrange = Color(red: 242 / 255, green: 194 / 255, blue: 48 / 255)
+    static let tangerineOrange = Color(red: 242 / 255, green: 146 / 255, blue: 29 / 255)
+    static let redOrange = Color(red: 242 / 255, green: 79 / 255, blue: 19 / 255)
 }
 
 /// Retro "sticker" treatments: a bold ink outline with a hard offset shadow.
@@ -76,8 +89,14 @@ struct GraphPaperBackground: View {
                 y += gridSpacing
             }
 
-            context.stroke(lines, with: .color(AppTheme.gridLinePink.opacity(0.35)), lineWidth: 0.5)
+            context.stroke(lines, with: .color(AppTheme.oliveGreen.opacity(0.35)), lineWidth: 0.5)
         }
-        .background(AppTheme.babyPink)
+        .background(AppTheme.limeGreen)
+    }
+}
+
+struct GraphPaperBackground_Previews: PreviewProvider {
+    static var previews: some View {
+        GraphPaperBackground()
     }
 }

@@ -85,3 +85,10 @@ struct DuplicateGroupView: View {
     }
 }
 
+struct DuplicateGroupView_Previews: PreviewProvider {
+    static var previews: some View {
+        DuplicateGroupView(group: DuplicateGroup(assets: [])) { _ in }
+            .padding()
+    }
+}
+

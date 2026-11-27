@@ -183,3 +183,10 @@ struct DraggablePhotoCard: View {
             .onEnded(onDragEnded)
     }
 }
+
+struct PhotoCardStack_Previews: PreviewProvider {
+    static var previews: some View {
+        PhotoCardView(photo: PhotoItem(image: UIImage()))
+            .padding()
+    }
+}

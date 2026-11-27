@@ -104,3 +104,9 @@ struct AssetThumbnailView: View {
         requestID = nil
     }
 }
+
+struct PhotoLibraryView_Previews: PreviewProvider {
+    static var previews: some View {
+        PhotoLibraryView(assets: []) { _ in }
+    }
+}
