@@ -77,12 +77,6 @@ class SortingViewModel: ObservableObject {
         fillWindow()
     }
 
-    /// Returns to the starting-photo picker without losing pending deletions.
-    func chooseNewStart() {
-        images = []
-        hasStartedSorting = false
-    }
-
     /// Loads assets starting at `cursor` until the display window holds
     /// `preloadCount` items (or the library is exhausted). Loads one at a time,
     /// in order, so the stack stays in a stable sequence and no asset is ever
